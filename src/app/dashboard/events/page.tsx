@@ -217,7 +217,7 @@ export default function EventsPage() {
       ) : (
         <Grid container spacing={3}>
           {events.map((event) => (
-            <Grid item xs={12} md={6} key={event.id}>
+            <Grid size={{ xs: 12, md: 6 }} key={event.id}>
               <Card elevation={2}>
                 <CardContent>
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
