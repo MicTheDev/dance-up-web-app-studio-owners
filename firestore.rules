@@ -1,0 +1,38 @@
+rules_version='2'
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Users collection
+    match /users/{userId} {
+      // Allow authenticated users to read their own profile
+      allow read: if request.auth != null && request.auth.uid == userId;
+      
+      // Allow authenticated users to create/update their own profile
+      allow create: if request.auth != null && request.auth.uid == userId;
+      allow update: if request.auth != null && request.auth.uid == userId;
+      
+      // Don't allow users to delete their own profile
+      allow delete: if false;
+    }
+    
+    // Studio Owners collection
+    match /studioOwners/{userId} {
+      // Allow authenticated users to read their own profile
+      allow read: if request.auth != null && request.auth.uid == userId;
+      
+      // Allow authenticated users to create/update their own profile
+      allow create: if request.auth != null && request.auth.uid == userId;
+      allow update: if request.auth != null && request.auth.uid == userId;
+      
+      // Don't allow users to delete their own profile
+      allow delete: if false;
+    }
+    
+    // Fallback rule for other collections (you can add more specific rules as needed)
+    match /{document=**} {
+      // Temporarily allow read/write for development - update with proper rules later
+      allow read, write: if request.time < timestamp.date(2025, 11, 25);
+    }
+  }
+}
+

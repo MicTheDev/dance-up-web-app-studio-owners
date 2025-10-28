@@ -27,7 +27,7 @@ export const theme = createTheme({
     },
   },
   typography: {
-    fontFamily: 'inherit',
+    fontFamily: 'var(--font-inter), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
     h1: {
       fontWeight: 700,
     },

@@ -1,0 +1,25 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Studio images - users can upload their own studio image
+    match /studio-images/{userId}/{allPaths=**} {
+      // Allow users to read any studio image (for public display)
+      allow read: if true;
+      
+      // Allow users to upload/update their own studio image
+      allow write: if request.auth != null && request.auth.uid == userId 
+                   && request.resource.size < 5 * 1024 * 1024 // Max 5MB
+                   && request.resource.contentType.matches('image/.*');
+      
+      // Allow users to delete their own studio image
+      allow delete: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // Deny access to all other paths by default
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}
+
