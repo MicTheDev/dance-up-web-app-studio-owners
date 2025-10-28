@@ -11,23 +11,37 @@ import {
   Grid,
   Paper,
   Stack,
-  Chip,
   IconButton,
   Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
   TextField,
+  Avatar,
+  CircularProgress,
 } from '@mui/material';
+import ImageIcon from '@mui/icons-material/Image';
+import DeleteIconOutline from '@mui/icons-material/DeleteOutline';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import { useAuthState } from 'react-firebase-hooks/auth';
-import { auth } from '@/lib/firebase';
+import { auth, db, storage } from '@/lib/firebase';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { 
+  collection, 
+  addDoc, 
+  updateDoc, 
+  deleteDoc, 
+  doc, 
+  query, 
+  where, 
+  onSnapshot 
+} from 'firebase/firestore';
+import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 
 interface Event {
   id: string;
@@ -36,7 +50,7 @@ interface Event {
   date: string;
   time: string;
   location: string;
-  type: 'workshop' | 'competition' | 'showcase' | 'other';
+  imageUrl?: string;
 }
 
 export default function EventsPage() {
@@ -51,8 +65,11 @@ export default function EventsPage() {
     date: '',
     time: '',
     location: '',
-    type: 'workshop' as Event['type'],
+    imageUrl: '',
   });
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string>('');
+  const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -60,41 +77,22 @@ export default function EventsPage() {
     }
   }, [user, loading, router]);
 
-  // Sample events data - in a real app, this would come from Firestore
+  // Fetch events from Firestore
   useEffect(() => {
-    if (user) {
-      // TODO: Fetch events from Firestore
-      const sampleEvents: Event[] = [
-        {
-          id: '1',
-          title: 'Summer Dance Workshop',
-          description: 'A comprehensive workshop covering various dance styles',
-          date: '2025-07-15',
-          time: '10:00 AM',
-          location: 'Main Studio',
-          type: 'workshop',
-        },
-        {
-          id: '2',
-          title: 'Annual Recital',
-          description: 'Our annual student recital showcasing talent from all classes',
-          date: '2025-08-20',
-          time: '6:00 PM',
-          location: 'Community Theater',
-          type: 'showcase',
-        },
-        {
-          id: '3',
-          title: 'Regional Dance Competition',
-          description: 'Competition featuring studios from across the region',
-          date: '2025-09-10',
-          time: '9:00 AM',
-          location: 'Convention Center',
-          type: 'competition',
-        },
-      ];
-      setEvents(sampleEvents);
-    }
+    if (!user) return;
+
+    const eventsRef = collection(db, 'events');
+    const q = query(eventsRef, where('userId', '==', user.uid));
+
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const eventsData: Event[] = [];
+      querySnapshot.forEach((doc) => {
+        eventsData.push({ id: doc.id, ...doc.data() } as Event);
+      });
+      setEvents(eventsData);
+    });
+
+    return () => unsubscribe();
   }, [user]);
 
   if (loading) {
@@ -118,8 +116,10 @@ export default function EventsPage() {
         date: event.date,
         time: event.time,
         location: event.location,
-        type: event.type,
+        imageUrl: event.imageUrl || '',
       });
+      setImagePreview(event.imageUrl || '');
+      setImageFile(null);
     } else {
       setEditingEvent(null);
       setFormData({
@@ -128,8 +128,10 @@ export default function EventsPage() {
         date: '',
         time: '',
         location: '',
-        type: 'workshop',
+        imageUrl: '',
       });
+      setImagePreview('');
+      setImageFile(null);
     }
     setOpenDialog(true);
   };
@@ -137,39 +139,109 @@ export default function EventsPage() {
   const handleCloseDialog = () => {
     setOpenDialog(false);
     setEditingEvent(null);
+    setImagePreview('');
+    setImageFile(null);
   };
 
-  const handleSaveEvent = () => {
-    // TODO: Save to Firestore
-    if (editingEvent) {
-      // Update existing event
-      setEvents(events.map(e => e.id === editingEvent.id ? { ...editingEvent, ...formData } : e));
-    } else {
-      // Add new event
-      const newEvent: Event = {
-        id: Date.now().toString(),
-        ...formData,
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setImageFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
       };
-      setEvents([...events, newEvent]);
+      reader.readAsDataURL(file);
     }
-    handleCloseDialog();
   };
 
-  const handleDeleteEvent = (id: string) => {
-    // TODO: Delete from Firestore
-    setEvents(events.filter(e => e.id !== id));
+  const handleRemoveImage = () => {
+    setImageFile(null);
+    setImagePreview('');
+    if (editingEvent && editingEvent.imageUrl) {
+      setFormData({ ...formData, imageUrl: '' });
+    }
   };
 
-  const getTypeColor = (type: Event['type']) => {
-    switch (type) {
-      case 'workshop':
-        return 'primary';
-      case 'competition':
-        return 'error';
-      case 'showcase':
-        return 'success';
-      default:
-        return 'default';
+  const handleSaveEvent = async () => {
+    if (!user) return;
+
+    setUploading(true);
+    try {
+      let imageUrl = formData.imageUrl;
+
+      // Upload new image if one was selected
+      if (imageFile) {
+        const imageRef = ref(storage, `events/${user.uid}/${Date.now()}_${imageFile.name}`);
+        await uploadBytes(imageRef, imageFile);
+        imageUrl = await getDownloadURL(imageRef);
+
+        // Delete old image if updating
+        if (editingEvent && editingEvent.imageUrl) {
+          try {
+            const oldImageRef = ref(storage, editingEvent.imageUrl);
+            await deleteObject(oldImageRef);
+          } catch (error) {
+            console.error('Error deleting old image:', error);
+          }
+        }
+      } else if (!imagePreview && editingEvent && editingEvent.imageUrl) {
+        // Image was removed
+        try {
+          const oldImageRef = ref(storage, editingEvent.imageUrl);
+          await deleteObject(oldImageRef);
+        } catch (error) {
+          console.error('Error deleting image:', error);
+        }
+        imageUrl = '';
+      }
+
+      const eventData = {
+        title: formData.title,
+        description: formData.description,
+        date: formData.date,
+        time: formData.time,
+        location: formData.location,
+        userId: user.uid,
+        ...(imageUrl && { imageUrl }),
+      };
+
+      if (editingEvent) {
+        // Update existing event
+        const eventRef = doc(db, 'events', editingEvent.id);
+        await updateDoc(eventRef, eventData);
+      } else {
+        // Add new event
+        await addDoc(collection(db, 'events'), eventData);
+      }
+      handleCloseDialog();
+    } catch (error) {
+      console.error('Error saving event:', error);
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleDeleteEvent = async (id: string) => {
+    if (!user) return;
+
+    try {
+      const event = events.find(e => e.id === id);
+      
+      // Delete image from storage if it exists
+      if (event?.imageUrl) {
+        try {
+          const imageRef = ref(storage, event.imageUrl);
+          await deleteObject(imageRef);
+        } catch (error) {
+          console.error('Error deleting image:', error);
+        }
+      }
+
+      const eventRef = doc(db, 'events', id);
+      await deleteDoc(eventRef);
+    } catch (error) {
+      console.error('Error deleting event:', error);
     }
   };
 
@@ -219,17 +291,22 @@ export default function EventsPage() {
           {events.map((event) => (
             <Grid size={{ xs: 12, md: 6 }} key={event.id}>
               <Card elevation={2}>
+                {event.imageUrl && (
+                  <Box
+                    component="img"
+                    src={event.imageUrl}
+                    alt={event.title}
+                    sx={{
+                      width: '100%',
+                      height: 200,
+                      objectFit: 'cover',
+                    }}
+                  />
+                )}
                 <CardContent>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
-                    <Typography variant="h5" fontWeight="bold" gutterBottom>
-                      {event.title}
-                    </Typography>
-                    <Chip
-                      label={event.type.charAt(0).toUpperCase() + event.type.slice(1)}
-                      color={getTypeColor(event.type) as any}
-                      size="small"
-                    />
-                  </Box>
+                  <Typography variant="h5" fontWeight="bold" gutterBottom>
+                    {event.title}
+                  </Typography>
                   <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
                     {event.description}
                   </Typography>
@@ -315,30 +392,66 @@ export default function EventsPage() {
               onChange={(e) => setFormData({ ...formData, location: e.target.value })}
               required
             />
-            <TextField
-              select
-              label="Event Type"
-              fullWidth
-              value={formData.type}
-              onChange={(e) => setFormData({ ...formData, type: e.target.value as Event['type'] })}
-              SelectProps={{ native: true }}
-              inputProps={{ 'aria-label': 'Event Type' }}
-            >
-              <option value="workshop">Workshop</option>
-              <option value="competition">Competition</option>
-              <option value="showcase">Showcase</option>
-              <option value="other">Other</option>
-            </TextField>
+            {/* Image Upload */}
+            <Box>
+              <Typography variant="body2" sx={{ mb: 1 }}>
+                Event Image (Optional)
+              </Typography>
+              {imagePreview ? (
+                <Box sx={{ position: 'relative', display: 'inline-block', width: '100%' }}>
+                  <Box
+                    component="img"
+                    src={imagePreview}
+                    alt="Preview"
+                    sx={{
+                      width: '100%',
+                      maxHeight: 200,
+                      objectFit: 'cover',
+                      borderRadius: 1,
+                    }}
+                  />
+                  <IconButton
+                    onClick={handleRemoveImage}
+                    sx={{
+                      position: 'absolute',
+                      top: 8,
+                      right: 8,
+                      bgcolor: 'rgba(0, 0, 0, 0.5)',
+                      color: 'white',
+                      '&:hover': { bgcolor: 'rgba(0, 0, 0, 0.7)' },
+                    }}
+                  >
+                    <DeleteIconOutline />
+                  </IconButton>
+                </Box>
+              ) : (
+                <Button
+                  variant="outlined"
+                  component="label"
+                  startIcon={<ImageIcon />}
+                  fullWidth
+                  sx={{ py: 1.5 }}
+                >
+                  Upload Image
+                  <input
+                    type="file"
+                    hidden
+                    accept="image/*"
+                    onChange={handleImageChange}
+                  />
+                </Button>
+              )}
+            </Box>
           </Stack>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCloseDialog}>Cancel</Button>
+          <Button onClick={handleCloseDialog} disabled={uploading}>Cancel</Button>
           <Button
             onClick={handleSaveEvent}
             variant="contained"
-            disabled={!formData.title || !formData.date || !formData.time || !formData.location}
+            disabled={!formData.title || !formData.date || !formData.time || !formData.location || uploading}
           >
-            {editingEvent ? 'Update' : 'Create'}
+            {uploading ? <CircularProgress size={24} /> : editingEvent ? 'Update' : 'Create'}
           </Button>
         </DialogActions>
       </Dialog>

@@ -32,6 +32,8 @@ import EventIcon from '@mui/icons-material/Event';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import LogoutIcon from '@mui/icons-material/Logout';
 import MusicNoteIcon from '@mui/icons-material/MusicNote';
+import InventoryIcon from '@mui/icons-material/Inventory';
+import MenuBookIcon from '@mui/icons-material/MenuBook';
 import { signOut } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import { useAuthState } from 'react-firebase-hooks/auth';
@@ -44,15 +46,37 @@ interface NavItem {
   path: string;
 }
 
-const navigationItems: NavItem[] = [
-  { text: 'Dashboard', icon: <DashboardIcon />, path: '/dashboard' },
-  { text: 'Studio', icon: <StoreIcon />, path: '/dashboard/studio' },
-  { text: 'Schedule', icon: <CalendarTodayIcon />, path: '/dashboard/schedule' },
-  { text: 'Classes', icon: <SchoolIcon />, path: '/dashboard/classes' },
-  { text: 'Students', icon: <PeopleIcon />, path: '/dashboard/students' },
-  { text: 'Events', icon: <EventIcon />, path: '/dashboard/events' },
-  { text: 'Analytics', icon: <BarChartIcon />, path: '/dashboard/analytics' },
-  { text: 'Settings', icon: <SettingsIcon />, path: '/dashboard/settings' },
+interface NavSection {
+  title: string;
+  items: NavItem[];
+}
+
+const navigationSections: NavSection[] = [
+  {
+    title: 'Main',
+    items: [
+      { text: 'Dashboard', icon: <DashboardIcon />, path: '/dashboard' },
+      { text: 'Studio', icon: <StoreIcon />, path: '/dashboard/studio' },
+      { text: 'Schedule', icon: <CalendarTodayIcon />, path: '/dashboard/schedule' },
+      { text: 'Students', icon: <PeopleIcon />, path: '/dashboard/students' },
+    ],
+  },
+  {
+    title: 'Content',
+    items: [
+      { text: 'Classes', icon: <SchoolIcon />, path: '/dashboard/classes' },
+      { text: 'Events', icon: <EventIcon />, path: '/dashboard/events' },
+      { text: 'Packages', icon: <InventoryIcon />, path: '/dashboard/packages' },
+      { text: 'Workshops', icon: <MenuBookIcon />, path: '/dashboard/workshops' },
+    ],
+  },
+  {
+    title: 'Other',
+    items: [
+      { text: 'Analytics', icon: <BarChartIcon />, path: '/dashboard/analytics' },
+      { text: 'Settings', icon: <SettingsIcon />, path: '/dashboard/settings' },
+    ],
+  },
 ];
 
 interface DashboardLayoutProps {
@@ -114,52 +138,73 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       </Toolbar>
       <Divider />
       <List sx={{ flexGrow: 1 }}>
-        {navigationItems.map((item) => {
-          const isActive = pathname === item.path || pathname?.startsWith(item.path + '/');
-          return (
-            <ListItem key={item.text} disablePadding>
-              <ListItemButton
-                selected={isActive}
-                onClick={() => {
-                  router.push(item.path);
-                  if (isMobile) {
-                    setMobileOpen(false);
-                  }
-                }}
+        {navigationSections.map((section, sectionIndex) => (
+          <Box key={section.title}>
+            {sectionIndex > 0 && <Divider sx={{ my: 1 }} />}
+            {section.title && (
+              <Typography
+                variant="caption"
                 sx={{
-                  minHeight: 48,
-                  justifyContent: 'flex-start',
                   px: 2.5,
-                  '&.Mui-selected': {
-                    backgroundColor: 'primary.main',
-                    color: 'primary.contrastText',
-                    '&:hover': {
-                      backgroundColor: 'primary.dark',
-                    },
-                    '& .MuiListItemIcon-root': {
-                      color: 'primary.contrastText',
-                    },
-                  },
-                  '&:hover': {
-                    backgroundColor: 'action.hover',
-                  },
+                  py: 1,
+                  color: 'text.secondary',
+                  fontWeight: 600,
+                  textTransform: 'uppercase',
+                  fontSize: '0.7rem',
+                  letterSpacing: '0.05em',
                 }}
               >
-                <ListItemIcon
-                  sx={{
-                    minWidth: 0,
-                    mr: 3,
-                    justifyContent: 'center',
-                    color: isActive ? 'primary.contrastText' : 'inherit',
-                  }}
-                >
-                  {item.icon}
-                </ListItemIcon>
-                <ListItemText primary={item.text} />
-              </ListItemButton>
-            </ListItem>
-          );
-        })}
+                {section.title}
+              </Typography>
+            )}
+            {section.items.map((item) => {
+              const isActive = pathname === item.path || pathname?.startsWith(item.path + '/');
+              return (
+                <ListItem key={item.text} disablePadding>
+                  <ListItemButton
+                    selected={isActive}
+                    onClick={() => {
+                      router.push(item.path);
+                      if (isMobile) {
+                        setMobileOpen(false);
+                      }
+                    }}
+                    sx={{
+                      minHeight: 48,
+                      justifyContent: 'flex-start',
+                      px: 2.5,
+                      '&.Mui-selected': {
+                        backgroundColor: 'primary.main',
+                        color: 'primary.contrastText',
+                        '&:hover': {
+                          backgroundColor: 'primary.dark',
+                        },
+                        '& .MuiListItemIcon-root': {
+                          color: 'primary.contrastText',
+                        },
+                      },
+                      '&:hover': {
+                        backgroundColor: 'action.hover',
+                      },
+                    }}
+                  >
+                    <ListItemIcon
+                      sx={{
+                        minWidth: 0,
+                        mr: 3,
+                        justifyContent: 'center',
+                        color: isActive ? 'primary.contrastText' : 'inherit',
+                      }}
+                    >
+                      {item.icon}
+                    </ListItemIcon>
+                    <ListItemText primary={item.text} />
+                  </ListItemButton>
+                </ListItem>
+              );
+            })}
+          </Box>
+        ))}
       </List>
       <Divider />
       <List>
