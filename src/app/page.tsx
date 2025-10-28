@@ -8,14 +8,9 @@ import {
   Card,
   CardContent,
   Box,
-  AppBar,
-  Toolbar,
-  IconButton,
   Stack,
   Paper,
 } from '@mui/material';
-import MenuIcon from '@mui/icons-material/Menu';
-import MusicNoteIcon from '@mui/icons-material/MusicNote';
 
 export default function Home() {
   const [count, setCount] = useState(0);
@@ -23,34 +18,13 @@ export default function Home() {
   return (
     <Box
       sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        minHeight: '100vh',
-        background: 'linear-gradient(to bottom right, #eff6ff, #f3e8ff)', // blue-50 to purple-50 gradient
+        background: 'linear-gradient(to bottom right, #eff6ff, #f3e8ff)',
+        minHeight: '100%',
+        py: 4,
       }}
     >
-      {/* App Bar */}
-      <AppBar position="static" elevation={0}>
-        <Toolbar>
-          <IconButton
-            size="large"
-            edge="start"
-            color="inherit"
-            aria-label="menu"
-            sx={{ mr: 2 }}
-          >
-            <MenuIcon />
-          </IconButton>
-          <MusicNoteIcon sx={{ mr: 1 }} />
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            Studio Owners
-          </Typography>
-          <Button color="inherit">Login</Button>
-        </Toolbar>
-      </AppBar>
-
       {/* Main Content */}
-      <Container maxWidth="lg" sx={{ mt: 6, mb: 6, flexGrow: 1 }}>
+      <Container maxWidth="lg" sx={{ py: 4 }}>
         <Stack spacing={4}>
           {/* Hero Section */}
           <Paper
@@ -143,23 +117,6 @@ export default function Home() {
           </Paper>
         </Stack>
       </Container>
-
-      {/* Footer */}
-      <Box
-        component="footer"
-        sx={{
-          bgcolor: 'primary.main',
-          color: 'white',
-          py: 3,
-          mt: 4,
-        }}
-      >
-        <Container maxWidth="lg">
-          <Typography variant="body2" align="center">
-            Studio Owners App © {new Date().getFullYear()} - Powered by DanceUp
-          </Typography>
-        </Container>
-      </Box>
     </Box>
   );
 }

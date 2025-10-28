@@ -1,0 +1,124 @@
+[debug] [2025-10-28T17:34:01.007Z] ----------------------------------------------------------------------
+[debug] [2025-10-28T17:34:01.014Z] Command:       /Users/micahjohnson/.nvm/versions/node/v24.3.0/bin/node /Users/micahjohnson/.nvm/versions/node/v24.3.0/bin/firebase deploy --only firestore:rules
+[debug] [2025-10-28T17:34:01.014Z] CLI Version:   14.22.0
+[debug] [2025-10-28T17:34:01.014Z] Platform:      darwin
+[debug] [2025-10-28T17:34:01.014Z] Node Version:  v24.3.0
+[debug] [2025-10-28T17:34:01.014Z] Time:          Tue Oct 28 2025 12:34:01 GMT-0500 (Central Daylight Time)
+[debug] [2025-10-28T17:34:01.014Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2025-10-28T17:34:01.015Z] >>> [apiv2][query] GET https://firebase-public.firebaseio.com/cli.json [none]
+[error] 
+[error] Error: No currently active project.
+To run this command, you need to specify a project. You have two options:
+- Run this command with --project <alias_or_project_id>.
+- Set an active project by running firebase use --add, then rerun this command.
+To list all the Firebase projects to which you have access, run firebase projects:list.
+To learn about active projects for the CLI, visit https://firebase.google.com/docs/cli#project_aliases
+
+
+[debug] [2025-10-28T17:34:01.272Z] <<< [apiv2][status] GET https://firebase-public.firebaseio.com/cli.json 200
+[debug] [2025-10-28T17:34:01.272Z] <<< [apiv2][body] GET https://firebase-public.firebaseio.com/cli.json {"cloudBuildErrorAfter":1594252800000,"cloudBuildWarnAfter":1590019200000,"defaultNode10After":1594252800000,"minVersion":"3.0.5","node8DeploysDisabledAfter":1613390400000,"node8RuntimeDisabledAfter":1615809600000,"node8WarnAfter":1600128000000}
+[debug] [2025-10-28T17:34:15.139Z] ----------------------------------------------------------------------
+[debug] [2025-10-28T17:34:15.141Z] Command:       /Users/micahjohnson/.nvm/versions/node/v24.3.0/bin/node /Users/micahjohnson/.nvm/versions/node/v24.3.0/bin/firebase projects:list
+[debug] [2025-10-28T17:34:15.141Z] CLI Version:   14.22.0
+[debug] [2025-10-28T17:34:15.141Z] Platform:      darwin
+[debug] [2025-10-28T17:34:15.141Z] Node Version:  v24.3.0
+[debug] [2025-10-28T17:34:15.141Z] Time:          Tue Oct 28 2025 12:34:15 GMT-0500 (Central Daylight Time)
+[debug] [2025-10-28T17:34:15.141Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2025-10-28T17:34:15.228Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-10-28T17:34:15.229Z] > authorizing via signed-in user (micahjthedev@gmail.com)
+[debug] [2025-10-28T17:34:15.231Z] Checked if tokens are valid: false, expires at: 1761510139826
+[debug] [2025-10-28T17:34:15.231Z] Checked if tokens are valid: false, expires at: 1761510139826
+[debug] [2025-10-28T17:34:15.231Z] > refreshing access token with scopes: []
+[debug] [2025-10-28T17:34:15.233Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2025-10-28T17:34:15.233Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2025-10-28T17:34:15.393Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 200
+[debug] [2025-10-28T17:34:15.393Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2025-10-28T17:34:15.405Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects pageSize=1000
+[debug] [2025-10-28T17:34:15.729Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects 200
+[debug] [2025-10-28T17:34:15.729Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects [omitted]
+[info] ┌──────────────────────┬──────────────────────┬────────────────┬──────────────────────┐
+│ Project Display Name │ Project ID           │ Project Number │ Resource Location ID │
+├──────────────────────┼──────────────────────┼────────────────┼──────────────────────┤
+│ dance-up-app         │ dance-up-app         │ 734142219537   │ [Not specified]      │
+├──────────────────────┼──────────────────────┼────────────────┼──────────────────────┤
+│ dance-up             │ dance-up-be50f       │ 1044674105110  │ [Not specified]      │
+├──────────────────────┼──────────────────────┼────────────────┼──────────────────────┤
+│ ScreenVerse          │ screenverse-qys9d    │ 1035139112537  │ [Not specified]      │
+├──────────────────────┼──────────────────────┼────────────────┼──────────────────────┤
+│ staging-dance-up     │ staging-dance-up     │ 923408660714   │ [Not specified]      │
+├──────────────────────┼──────────────────────┼────────────────┼──────────────────────┤
+│ staging-dance-up-app │ staging-dance-up-app │ 1042260177273  │ [Not specified]      │
+└──────────────────────┴──────────────────────┴────────────────┴──────────────────────┘
+[info] 
+[info] 5 project(s) total.
+[debug] [2025-10-28T17:34:22.866Z] ----------------------------------------------------------------------
+[debug] [2025-10-28T17:34:22.868Z] Command:       /Users/micahjohnson/.nvm/versions/node/v24.3.0/bin/node /Users/micahjohnson/.nvm/versions/node/v24.3.0/bin/firebase deploy --only firestore:rules --project staging-dance-up-app
+[debug] [2025-10-28T17:34:22.868Z] CLI Version:   14.22.0
+[debug] [2025-10-28T17:34:22.868Z] Platform:      darwin
+[debug] [2025-10-28T17:34:22.868Z] Node Version:  v24.3.0
+[debug] [2025-10-28T17:34:22.868Z] Time:          Tue Oct 28 2025 12:34:22 GMT-0500 (Central Daylight Time)
+[debug] [2025-10-28T17:34:22.868Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2025-10-28T17:34:22.954Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-10-28T17:34:22.955Z] > authorizing via signed-in user (micahjthedev@gmail.com)
+[debug] [2025-10-28T17:34:22.955Z] [iam] checking project staging-dance-up-app for permissions ["datastore.indexes.create","datastore.indexes.delete","datastore.indexes.list","datastore.indexes.update","firebase.projects.get"]
+[debug] [2025-10-28T17:34:22.956Z] Checked if tokens are valid: true, expires at: 1761676454393
+[debug] [2025-10-28T17:34:22.956Z] Checked if tokens are valid: true, expires at: 1761676454393
+[debug] [2025-10-28T17:34:22.956Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/staging-dance-up-app:testIamPermissions [none]
+[debug] [2025-10-28T17:34:22.956Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/staging-dance-up-app:testIamPermissions x-goog-quota-user=projects/staging-dance-up-app
+[debug] [2025-10-28T17:34:22.956Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/staging-dance-up-app:testIamPermissions {"permissions":["datastore.indexes.create","datastore.indexes.delete","datastore.indexes.list","datastore.indexes.update","firebase.projects.get"]}
+[debug] [2025-10-28T17:34:23.175Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/staging-dance-up-app:testIamPermissions 200
+[debug] [2025-10-28T17:34:23.175Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/staging-dance-up-app:testIamPermissions {"permissions":["datastore.indexes.create","datastore.indexes.delete","datastore.indexes.list","datastore.indexes.update","firebase.projects.get"]}
+[info] 
+[info] === Deploying to 'staging-dance-up-app'...
+[info] 
+[info] i  deploying firestore 
+[info] i  firestore: ensuring required API firestore.googleapis.com is enabled... 
+[info] i  firestore: ensuring required API firestore.googleapis.com is enabled... 
+[debug] [2025-10-28T17:34:23.177Z] Checked if tokens are valid: true, expires at: 1761676454393
+[debug] [2025-10-28T17:34:23.177Z] Checked if tokens are valid: true, expires at: 1761676454393
+[debug] [2025-10-28T17:34:23.177Z] >>> [apiv2][query] GET https://firestore.googleapis.com/v1/projects/staging-dance-up-app/databases/(default) [none]
+[debug] [2025-10-28T17:34:23.403Z] <<< [apiv2][status] GET https://firestore.googleapis.com/v1/projects/staging-dance-up-app/databases/(default) 200
+[debug] [2025-10-28T17:34:23.403Z] <<< [apiv2][body] GET https://firestore.googleapis.com/v1/projects/staging-dance-up-app/databases/(default) {"name":"projects/staging-dance-up-app/databases/(default)","uid":"10f6b2fc-05fb-4362-be67-b13055d9b32b","createTime":"2025-10-26T17:58:01.276176Z","updateTime":"2025-10-26T17:58:01.276176Z","locationId":"nam5","type":"FIRESTORE_NATIVE","concurrencyMode":"PESSIMISTIC","versionRetentionPeriod":"3600s","earliestVersionTime":"2025-10-28T16:34:23.501319Z","appEngineIntegrationMode":"DISABLED","keyPrefix":"s","pointInTimeRecoveryEnablement":"POINT_IN_TIME_RECOVERY_DISABLED","deleteProtectionState":"DELETE_PROTECTION_DISABLED","databaseEdition":"STANDARD","freeTier":false,"realtimeUpdatesMode":"REALTIME_UPDATES_MODE_ENABLED","etag":"IKyU9em2x5ADMP2NwsK4wpAD"}
+[info] i  firestore: reading indexes from firestore.indexes.json... 
+[info] i  cloud.firestore: checking firestore.rules for compilation errors... 
+[debug] [2025-10-28T17:34:23.406Z] Checked if tokens are valid: true, expires at: 1761676454393
+[debug] [2025-10-28T17:34:23.406Z] Checked if tokens are valid: true, expires at: 1761676454393
+[debug] [2025-10-28T17:34:23.406Z] >>> [apiv2][query] POST https://firebaserules.googleapis.com/v1/projects/staging-dance-up-app:test [none]
+[debug] [2025-10-28T17:34:23.406Z] >>> [apiv2][body] POST https://firebaserules.googleapis.com/v1/projects/staging-dance-up-app:test [omitted]
+[debug] [2025-10-28T17:34:23.608Z] <<< [apiv2][status] POST https://firebaserules.googleapis.com/v1/projects/staging-dance-up-app:test 200
+[debug] [2025-10-28T17:34:23.608Z] <<< [apiv2][body] POST https://firebaserules.googleapis.com/v1/projects/staging-dance-up-app:test {}
+[info] ✔  cloud.firestore: rules file firestore.rules compiled successfully 
+[debug] [2025-10-28T17:34:23.611Z] Checked if tokens are valid: true, expires at: 1761676454393
+[debug] [2025-10-28T17:34:23.611Z] Checked if tokens are valid: true, expires at: 1761676454393
+[debug] [2025-10-28T17:34:23.611Z] >>> [apiv2][query] GET https://firebaserules.googleapis.com/v1/projects/staging-dance-up-app/releases pageSize=10&pageToken=
+[debug] [2025-10-28T17:34:23.718Z] <<< [apiv2][status] GET https://firebaserules.googleapis.com/v1/projects/staging-dance-up-app/releases 200
+[debug] [2025-10-28T17:34:23.718Z] <<< [apiv2][body] GET https://firebaserules.googleapis.com/v1/projects/staging-dance-up-app/releases {"releases":[{"name":"projects/staging-dance-up-app/releases/cloud.firestore","rulesetName":"projects/staging-dance-up-app/rulesets/77ec5820-8003-45d7-88b9-9cf59aec5427","createTime":"2025-10-26T17:58:03.414652Z","updateTime":"2025-10-26T19:22:22.150548Z"},{"name":"projects/staging-dance-up-app/releases/firebase.storage/staging-dance-up-app.firebasestorage.app","rulesetName":"projects/staging-dance-up-app/rulesets/40d18d27-b678-4d00-8b14-3b75fe13364c","createTime":"2025-10-26T16:54:11.485017Z","updateTime":"2025-10-26T16:54:11.485017Z"}]}
+[debug] [2025-10-28T17:34:23.746Z] Checked if tokens are valid: true, expires at: 1761676454393
+[debug] [2025-10-28T17:34:23.746Z] Checked if tokens are valid: true, expires at: 1761676454393
+[debug] [2025-10-28T17:34:23.746Z] >>> [apiv2][query] GET https://firebaserules.googleapis.com/v1/projects/staging-dance-up-app/rulesets/77ec5820-8003-45d7-88b9-9cf59aec5427 [none]
+[debug] [2025-10-28T17:34:23.835Z] <<< [apiv2][status] GET https://firebaserules.googleapis.com/v1/projects/staging-dance-up-app/rulesets/77ec5820-8003-45d7-88b9-9cf59aec5427 200
+[debug] [2025-10-28T17:34:23.835Z] <<< [apiv2][body] GET https://firebaserules.googleapis.com/v1/projects/staging-dance-up-app/rulesets/77ec5820-8003-45d7-88b9-9cf59aec5427 [omitted]
+[info] i  firestore: uploading rules firestore.rules... 
+[debug] [2025-10-28T17:34:23.836Z] Checked if tokens are valid: true, expires at: 1761676454393
+[debug] [2025-10-28T17:34:23.836Z] Checked if tokens are valid: true, expires at: 1761676454393
+[debug] [2025-10-28T17:34:23.836Z] >>> [apiv2][query] POST https://firebaserules.googleapis.com/v1/projects/staging-dance-up-app/rulesets [none]
+[debug] [2025-10-28T17:34:23.836Z] >>> [apiv2][body] POST https://firebaserules.googleapis.com/v1/projects/staging-dance-up-app/rulesets [omitted]
+[debug] [2025-10-28T17:34:24.026Z] <<< [apiv2][status] POST https://firebaserules.googleapis.com/v1/projects/staging-dance-up-app/rulesets 200
+[debug] [2025-10-28T17:34:24.026Z] <<< [apiv2][body] POST https://firebaserules.googleapis.com/v1/projects/staging-dance-up-app/rulesets {"name":"projects/staging-dance-up-app/rulesets/c4147865-b136-440a-8ff8-b1cbb73c45b3","source":{"files":[{"content":"rules_version='2'\n\nservice cloud.firestore {\n  match /databases/{database}/documents {\n    // Users collection\n    match /users/{userId} {\n      // Allow authenticated users to read their own profile\n      allow read: if request.auth != null && request.auth.uid == userId;\n      \n      // Allow authenticated users to create/update their own profile\n      allow create: if request.auth != null && request.auth.uid == userId;\n      allow update: if request.auth != null && request.auth.uid == userId;\n      \n      // Don't allow users to delete their own profile\n      allow delete: if false;\n    }\n    \n    // Studio Owners collection\n    match /studioOwners/{userId} {\n      // Allow authenticated users to read their own profile\n      allow read: if request.auth != null && request.auth.uid == userId;\n      \n      // Allow authenticated users to create/update their own profile\n      allow create: if request.auth != null && request.auth.uid == userId;\n      allow update: if request.auth != null && request.auth.uid == userId;\n      \n      // Don't allow users to delete their own profile\n      allow delete: if false;\n    }\n    \n    // Fallback rule for other collections (you can add more specific rules as needed)\n    match /{document=**} {\n      // Temporarily allow read/write for development - update with proper rules later\n      allow read, write: if request.time < timestamp.date(2025, 11, 25);\n    }\n  }\n}\n\n","name":"firestore.rules"}]},"createTime":"2025-10-28T17:34:24.106479Z","metadata":{"services":["cloud.firestore"]}}
+[debug] [2025-10-28T17:34:24.026Z] [rules] created ruleset projects/staging-dance-up-app/rulesets/c4147865-b136-440a-8ff8-b1cbb73c45b3
+[debug] [2025-10-28T17:34:24.027Z] [rules] releasing cloud.firestore/(default) with ruleset projects/staging-dance-up-app/rulesets/c4147865-b136-440a-8ff8-b1cbb73c45b3
+[debug] [2025-10-28T17:34:24.027Z] Checked if tokens are valid: true, expires at: 1761676454393
+[debug] [2025-10-28T17:34:24.027Z] Checked if tokens are valid: true, expires at: 1761676454393
+[debug] [2025-10-28T17:34:24.027Z] >>> [apiv2][query] PATCH https://firebaserules.googleapis.com/v1/projects/staging-dance-up-app/releases/cloud.firestore/(default) [none]
+[debug] [2025-10-28T17:34:24.027Z] >>> [apiv2][body] PATCH https://firebaserules.googleapis.com/v1/projects/staging-dance-up-app/releases/cloud.firestore/(default) {"release":{"name":"projects/staging-dance-up-app/releases/cloud.firestore/(default)","rulesetName":"projects/staging-dance-up-app/rulesets/c4147865-b136-440a-8ff8-b1cbb73c45b3"}}
+[debug] [2025-10-28T17:34:24.185Z] <<< [apiv2][status] PATCH https://firebaserules.googleapis.com/v1/projects/staging-dance-up-app/releases/cloud.firestore/(default) 200
+[debug] [2025-10-28T17:34:24.185Z] <<< [apiv2][body] PATCH https://firebaserules.googleapis.com/v1/projects/staging-dance-up-app/releases/cloud.firestore/(default) {"name":"projects/staging-dance-up-app/releases/cloud.firestore","rulesetName":"projects/staging-dance-up-app/rulesets/c4147865-b136-440a-8ff8-b1cbb73c45b3","createTime":"2025-10-26T17:58:03.414652Z","updateTime":"2025-10-28T17:34:24.269736Z"}
+[debug] [2025-10-28T17:34:24.185Z] [rules] updated release projects/staging-dance-up-app/releases/cloud.firestore
+[info] ✔  firestore: released rules firestore.rules to cloud.firestore 
+[info] 
+[info] ✔  Deploy complete! 
+[info] 
+[info] Project Console: https://console.firebase.google.com/project/staging-dance-up-app/overview
