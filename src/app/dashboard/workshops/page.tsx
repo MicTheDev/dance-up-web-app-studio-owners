@@ -33,6 +33,7 @@ import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth, db, storage } from '@/lib/firebase';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import ComingSoonModal from '@/components/ComingSoonModal';
 import { 
   collection, 
   addDoc, 
@@ -67,6 +68,7 @@ export default function WorkshopsPage() {
   const [workshops, setWorkshops] = useState<Workshop[]>([]);
   const [openDialog, setOpenDialog] = useState(false);
   const [editingWorkshop, setEditingWorkshop] = useState<Workshop | null>(null);
+  const [showComingSoon, setShowComingSoon] = useState(true);
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -299,6 +301,10 @@ export default function WorkshopsPage() {
       day: 'numeric' 
     });
   };
+
+  if (showComingSoon) {
+    return <ComingSoonModal featureName="Workshops" preventClose={true} onClose={() => setShowComingSoon(false)} />;
+  }
 
   return (
     <Container maxWidth="lg">
