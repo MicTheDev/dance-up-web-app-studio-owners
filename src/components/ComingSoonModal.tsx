@@ -51,7 +51,7 @@ export default function ComingSoonModal({
           borderRadius: 3,
           textAlign: 'center',
         },
-        onClick: (e) => {
+        onClick: (e: React.MouseEvent<HTMLDivElement>) => {
           e.stopPropagation();
         },
       }}
