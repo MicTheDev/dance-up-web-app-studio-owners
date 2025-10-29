@@ -29,6 +29,7 @@ import SchoolIcon from '@mui/icons-material/School';
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth, db } from '@/lib/firebase';
+import ComingSoonModal from '@/components/ComingSoonModal';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { 
@@ -65,6 +66,7 @@ export default function ClassesPage() {
   const [classes, setClasses] = useState<Class[]>([]);
   const [openDialog, setOpenDialog] = useState(false);
   const [editingClass, setEditingClass] = useState<Class | null>(null);
+  const [showComingSoon, setShowComingSoon] = useState(true);
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -229,6 +231,10 @@ export default function ClassesPage() {
         return 'primary';
     }
   };
+
+  if (showComingSoon) {
+    return <ComingSoonModal featureName="Classes" preventClose={true} onClose={() => setShowComingSoon(false)} />;
+  }
 
   return (
     <Container maxWidth="lg">

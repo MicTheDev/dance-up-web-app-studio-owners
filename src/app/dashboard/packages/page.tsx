@@ -33,6 +33,7 @@ import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth, db } from '@/lib/firebase';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import ComingSoonModal from '@/components/ComingSoonModal';
 import { 
   collection, 
   addDoc, 
@@ -67,6 +68,7 @@ export default function PackagesPage() {
   const [classes, setClasses] = useState<Class[]>([]);
   const [openDialog, setOpenDialog] = useState(false);
   const [editingPackage, setEditingPackage] = useState<Package | null>(null);
+  const [showComingSoon, setShowComingSoon] = useState(true);
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -216,6 +218,10 @@ export default function PackagesPage() {
       console.error('Error updating package:', error);
     }
   };
+
+  if (showComingSoon) {
+    return <ComingSoonModal featureName="Packages" preventClose={true} onClose={() => setShowComingSoon(false)} />;
+  }
 
   return (
     <Container maxWidth="lg">
