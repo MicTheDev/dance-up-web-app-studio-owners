@@ -42,16 +42,26 @@ export default function ComingSoonModal({
   return (
     <Dialog
       open={true}
-      onClose={handleClose}
+      onClose={preventClose ? undefined : handleClose}
       maxWidth="sm"
       fullWidth
       disableEscapeKeyDown={preventClose}
-      onBackdropClick={handleClose}
       PaperProps={{
         sx: {
           borderRadius: 3,
           textAlign: 'center',
-        }
+        },
+        onClick: (e) => {
+          e.stopPropagation();
+        },
+      }}
+      slotProps={{
+        backdrop: {
+          onClick: preventClose ? undefined : handleClose,
+          sx: {
+            pointerEvents: preventClose ? 'none' : 'auto',
+          },
+        },
       }}
     >
       <DialogContent sx={{ pt: 4, pb: 2 }}>
