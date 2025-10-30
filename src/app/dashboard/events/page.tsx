@@ -19,6 +19,10 @@ import {
   TextField,
   Avatar,
   CircularProgress,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
 } from '@mui/material';
 import ImageIcon from '@mui/icons-material/Image';
 import DeleteIconOutline from '@mui/icons-material/DeleteOutline';
@@ -49,7 +53,9 @@ interface Event {
   description: string;
   date: string;
   time: string;
-  location: string;
+  location?: string; // legacy field
+  city?: string;
+  state?: string;
   imageUrl?: string;
 }
 
@@ -64,7 +70,8 @@ export default function EventsPage() {
     description: '',
     date: '',
     time: '',
-    location: '',
+    city: '',
+    state: '',
     imageUrl: '',
   });
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -110,12 +117,23 @@ export default function EventsPage() {
   const handleOpenDialog = (event?: Event) => {
     if (event) {
       setEditingEvent(event);
+      // derive city/state from event, falling back to parsing legacy location string
+      let derivedCity = event.city || '';
+      let derivedState = event.state || '';
+      if ((!derivedCity || !derivedState) && event.location) {
+        const parts = event.location.split(',').map((p) => p.trim());
+        if (parts.length >= 2) {
+          if (!derivedCity) derivedCity = parts[0];
+          if (!derivedState) derivedState = parts[1];
+        }
+      }
       setFormData({
         title: event.title,
         description: event.description,
         date: event.date,
         time: event.time,
-        location: event.location,
+        city: derivedCity,
+        state: derivedState,
         imageUrl: event.imageUrl || '',
       });
       setImagePreview(event.imageUrl || '');
@@ -127,7 +145,8 @@ export default function EventsPage() {
         description: '',
         date: '',
         time: '',
-        location: '',
+        city: '',
+        state: '',
         imageUrl: '',
       });
       setImagePreview('');
@@ -201,7 +220,10 @@ export default function EventsPage() {
         description: formData.description,
         date: formData.date,
         time: formData.time,
-        location: formData.location,
+        // store both the normalized fields and a legacy-friendly string location
+        city: formData.city,
+        state: formData.state,
+        location: `${formData.city}${formData.state ? ', ' + formData.state : ''}`,
         userId: user.uid,
         ...(imageUrl && { imageUrl }),
       };
@@ -319,7 +341,9 @@ export default function EventsPage() {
                     </Box>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                       <LocationOnIcon fontSize="small" color="action" />
-                      <Typography variant="body2">{event.location}</Typography>
+                      <Typography variant="body2">
+                        {event.city && event.state ? `${event.city}, ${event.state}` : (event.location || '')}
+                      </Typography>
                     </Box>
                   </Stack>
                 </CardContent>
@@ -385,13 +409,76 @@ export default function EventsPage() {
                 required
               />
             </Box>
-            <TextField
-              label="Location"
-              fullWidth
-              value={formData.location}
-              onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-              required
-            />
+            <Box sx={{ display: 'flex', gap: 2 }}>
+              <TextField
+                label="City"
+                fullWidth
+                value={formData.city}
+                onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+                required
+              />
+              <FormControl fullWidth required>
+                <InputLabel id="state-select-label">State</InputLabel>
+                <Select
+                  labelId="state-select-label"
+                  label="State"
+                  value={formData.state}
+                  onChange={(e) => setFormData({ ...formData, state: e.target.value as string })}
+                >
+                  <MenuItem value="">None</MenuItem>
+                  <MenuItem value="AL">Alabama</MenuItem>
+                  <MenuItem value="AK">Alaska</MenuItem>
+                  <MenuItem value="AZ">Arizona</MenuItem>
+                  <MenuItem value="AR">Arkansas</MenuItem>
+                  <MenuItem value="CA">California</MenuItem>
+                  <MenuItem value="CO">Colorado</MenuItem>
+                  <MenuItem value="CT">Connecticut</MenuItem>
+                  <MenuItem value="DE">Delaware</MenuItem>
+                  <MenuItem value="FL">Florida</MenuItem>
+                  <MenuItem value="GA">Georgia</MenuItem>
+                  <MenuItem value="HI">Hawaii</MenuItem>
+                  <MenuItem value="ID">Idaho</MenuItem>
+                  <MenuItem value="IL">Illinois</MenuItem>
+                  <MenuItem value="IN">Indiana</MenuItem>
+                  <MenuItem value="IA">Iowa</MenuItem>
+                  <MenuItem value="KS">Kansas</MenuItem>
+                  <MenuItem value="KY">Kentucky</MenuItem>
+                  <MenuItem value="LA">Louisiana</MenuItem>
+                  <MenuItem value="ME">Maine</MenuItem>
+                  <MenuItem value="MD">Maryland</MenuItem>
+                  <MenuItem value="MA">Massachusetts</MenuItem>
+                  <MenuItem value="MI">Michigan</MenuItem>
+                  <MenuItem value="MN">Minnesota</MenuItem>
+                  <MenuItem value="MS">Mississippi</MenuItem>
+                  <MenuItem value="MO">Missouri</MenuItem>
+                  <MenuItem value="MT">Montana</MenuItem>
+                  <MenuItem value="NE">Nebraska</MenuItem>
+                  <MenuItem value="NV">Nevada</MenuItem>
+                  <MenuItem value="NH">New Hampshire</MenuItem>
+                  <MenuItem value="NJ">New Jersey</MenuItem>
+                  <MenuItem value="NM">New Mexico</MenuItem>
+                  <MenuItem value="NY">New York</MenuItem>
+                  <MenuItem value="NC">North Carolina</MenuItem>
+                  <MenuItem value="ND">North Dakota</MenuItem>
+                  <MenuItem value="OH">Ohio</MenuItem>
+                  <MenuItem value="OK">Oklahoma</MenuItem>
+                  <MenuItem value="OR">Oregon</MenuItem>
+                  <MenuItem value="PA">Pennsylvania</MenuItem>
+                  <MenuItem value="RI">Rhode Island</MenuItem>
+                  <MenuItem value="SC">South Carolina</MenuItem>
+                  <MenuItem value="SD">South Dakota</MenuItem>
+                  <MenuItem value="TN">Tennessee</MenuItem>
+                  <MenuItem value="TX">Texas</MenuItem>
+                  <MenuItem value="UT">Utah</MenuItem>
+                  <MenuItem value="VT">Vermont</MenuItem>
+                  <MenuItem value="VA">Virginia</MenuItem>
+                  <MenuItem value="WA">Washington</MenuItem>
+                  <MenuItem value="WV">West Virginia</MenuItem>
+                  <MenuItem value="WI">Wisconsin</MenuItem>
+                  <MenuItem value="WY">Wyoming</MenuItem>
+                </Select>
+              </FormControl>
+            </Box>
             {/* Image Upload */}
             <Box>
               <Typography variant="body2" sx={{ mb: 1 }}>
@@ -449,7 +536,7 @@ export default function EventsPage() {
           <Button
             onClick={handleSaveEvent}
             variant="contained"
-            disabled={!formData.title || !formData.date || !formData.time || !formData.location || uploading}
+            disabled={!formData.title || !formData.date || !formData.time || !formData.city || !formData.state || uploading}
           >
             {uploading ? <CircularProgress size={24} /> : editingEvent ? 'Update' : 'Create'}
           </Button>
