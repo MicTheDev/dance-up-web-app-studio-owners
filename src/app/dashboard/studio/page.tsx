@@ -26,7 +26,7 @@ import SaveIcon from '@mui/icons-material/Save';
 import CancelIcon from '@mui/icons-material/Cancel';
 import ImageIcon from '@mui/icons-material/Image';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
-import { doc, getDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
+import { doc, getDoc, updateDoc, serverTimestamp, setDoc } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 
 // US States array
@@ -101,12 +101,22 @@ interface StudioData {
     instagram?: string;
     tiktok?: string;
   };
+  role?: string;
   accessLevel: string;
   createdAt?: any;
   updatedAt?: any;
 }
 
+// Ensure this page is rendered dynamically to avoid stale SSR HTML
+export const dynamic = 'force-dynamic';
+
 export default function StudioPage() {
+  // Avoid hydration mismatches by rendering only after mount
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const [user, loading] = useAuthState(auth);
   const router = useRouter();
   const [studioData, setStudioData] = useState<StudioData | null>(null);
@@ -145,7 +155,7 @@ export default function StudioPage() {
       if (!user) return;
 
       try {
-        const docRef = doc(db, 'studioOwners', user.uid);
+        const docRef = doc(db, 'users', user.uid);
         const docSnap = await getDoc(docRef);
 
         if (docSnap.exists()) {
@@ -181,18 +191,6 @@ export default function StudioPage() {
 
     fetchStudioData();
   }, [user]);
-
-  if (loading || loadingData) {
-    return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '50vh' }}>
-        <CircularProgress />
-      </Box>
-    );
-  }
-
-  if (!user || !studioData) {
-    return null;
-  }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -253,6 +251,18 @@ export default function StudioPage() {
       setNewImage(null);
     }
   };
+
+  if (!mounted || loading || loadingData) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '50vh' }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (!user || !studioData) {
+    return null;
+  }
 
   const handleSave = async () => {
     if (!user || !studioData) return;
@@ -316,13 +326,30 @@ export default function StudioPage() {
         updatedAt: serverTimestamp(),
       };
 
-      // Update both collections
-      const studioOwnerRef = doc(db, 'studioOwners', user.uid);
-      await updateDoc(studioOwnerRef, updatedData);
-
-      // Update users collection as well
+      // Update studio profile in users collection
       const userRef = doc(db, 'users', user.uid);
       await updateDoc(userRef, updatedData);
+
+      // Ensure a public-facing studio profile exists for the users app
+      const publicStudioRef = doc(db, 'studios', user.uid);
+      const publicData = {
+        name: updatedData.studioName,
+        imageUrl: updatedData.studioImageURL,
+        website: updatedData.website,
+        email: studioData.email,
+        city: updatedData.city,
+        state: updatedData.state,
+        location: `${updatedData.city}${updatedData.state ? ', ' + updatedData.state : ''}`,
+        facebook: updatedData.socialMedia.facebook,
+        instagram: updatedData.socialMedia.instagram,
+        tiktok: updatedData.socialMedia.tiktok,
+        updatedAt: serverTimestamp(),
+      };
+      try {
+        await updateDoc(publicStudioRef, publicData);
+      } catch {
+        await setDoc(publicStudioRef, publicData, { merge: true });
+      }
 
       setStudioData({ ...studioData, ...updatedData });
       setIsEditing(false);
@@ -479,7 +506,7 @@ export default function StudioPage() {
                 </Grid>
                 <TextField
                   label="Email"
-                  value={studioData.email}
+                  value={studioData?.email || ''}
                   disabled
                   fullWidth
                 />

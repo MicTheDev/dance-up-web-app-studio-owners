@@ -112,7 +112,7 @@ export default function Login() {
     facebook: '',
     instagram: '',
     tiktok: '',
-    accessLevel: 'studio_owner',
+    accessLevel: '', // Keep blank for legacy purposes
   });
   const [studioImage, setStudioImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string>('');
@@ -258,14 +258,14 @@ export default function Login() {
           instagram: formData.instagram || '',
           tiktok: formData.tiktok || '',
         },
-        accessLevel: formData.accessLevel,
+        role: 'studio_owner', // Automatically assign studio owner role
+        accessLevel: '', // Keep blank for legacy purposes
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
       };
 
-      // Save to both users and studioOwners collections
+      // Save only to users collection
       await setDoc(doc(db, 'users', userCredential.user.uid), userData);
-      await setDoc(doc(db, 'studioOwners', userCredential.user.uid), userData);
 
       // Redirect to dashboard after successful registration
       router.push('/dashboard');

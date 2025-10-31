@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import {
   Box,
@@ -84,6 +84,7 @@ interface DashboardLayoutProps {
 }
 
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
+  const [mounted, setMounted] = useState(false);
   const [user] = useAuthState(auth);
   const pathname = usePathname();
   const theme = useTheme();
@@ -91,6 +92,10 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const router = useRouter();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -250,10 +255,30 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     </Box>
   );
 
+  if (!mounted) {
+    return (
+      <Box sx={{ display: 'flex', minHeight: '100vh' }}>
+        <Box
+          component="main"
+          sx={{
+            flexGrow: 1,
+            p: 3,
+            width: '100%',
+            minHeight: '100vh',
+            backgroundColor: 'background.default',
+          }}
+        >
+          {children}
+        </Box>
+      </Box>
+    );
+  }
+
   return (
     <Box sx={{ display: 'flex', minHeight: '100vh' }}>
       {/* Mobile Menu Button - Show only on mobile at top */}
       <Box
+        suppressHydrationWarning
         sx={{
           position: 'fixed',
           top: 0,
@@ -339,6 +364,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           ModalProps={{
             keepMounted: true, // Better open performance on mobile.
           }}
+          suppressHydrationWarning
           sx={{
             display: { xs: 'block', md: 'none' },
             '& .MuiDrawer-paper': {
@@ -353,6 +379,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         {/* Desktop drawer */}
         <Drawer
           variant="permanent"
+          suppressHydrationWarning
           sx={{
             display: { xs: 'none', md: 'block' },
             '& .MuiDrawer-paper': {
