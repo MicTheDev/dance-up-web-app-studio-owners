@@ -1,0 +1,59 @@
+# Settings for Backend (on Cloud Run).
+# See https://firebase.google.com/docs/app-hosting/configure#cloud-run
+runConfig:
+  minInstances: 0
+  # maxInstances: 100
+  # concurrency: 80
+  # cpu: 1
+  # memoryMiB: 512
+
+# Environment variables and secrets.
+env:
+  # Production Firebase Configuration using Cloud Secret Manager
+  # See https://firebase.google.com/docs/app-hosting/configure#secret-parameters
+  # 
+  # IMPORTANT: Create these secrets in Google Cloud Secret Manager before deploying
+  # Secret names must match the 'secret' values below
+  
+  - variable: NEXT_PUBLIC_FIREBASE_API_KEY
+    secret: firebase-api-key
+    availability:
+      - BUILD
+      - RUNTIME
+      
+  - variable: NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
+    secret: firebase-auth-domain
+    availability:
+      - BUILD
+      - RUNTIME
+      
+  - variable: NEXT_PUBLIC_FIREBASE_PROJECT_ID
+    secret: firebase-project-id
+    availability:
+      - BUILD
+      - RUNTIME
+      
+  - variable: NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
+    secret: firebase-storage-bucket
+    availability:
+      - BUILD
+      - RUNTIME
+      
+  - variable: NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID
+    secret: firebase-messaging-sender-id
+    availability:
+      - BUILD
+      - RUNTIME
+      
+  - variable: NEXT_PUBLIC_FIREBASE_APP_ID
+    secret: firebase-app-id
+    availability:
+      - BUILD
+      - RUNTIME
+      
+  - variable: NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
+    secret: firebase-measurement-id
+    availability:
+      - BUILD
+      - RUNTIME
+
